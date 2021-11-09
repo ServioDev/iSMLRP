@@ -366,6 +366,8 @@ export default function Transaction() {
                       result[index].fields['vat'] += lList[i3].fields['vat'];
                       result[index].fields['penaltyamount'] +=
                         lList[i3].fields['penaltyamount'];
+                      result[index].fields['remarks'] =
+                        lList[i3].fields['remarks'];
                     }
                   }
 

@@ -3,6 +3,7 @@ import Airtable from 'airtable';
 
 //List status field criteria
 export const getstatusCollection = () => [
+  { id: 'New', title: 'New' },
   { id: 'Completed', title: 'Completed' },
   { id: 'Reamortization', title: 'Reamortization' },
   { id: 'Checked', title: 'Checked' },
@@ -50,6 +51,7 @@ const getTransactionBase = (loanYear) => {
 
 //Create new Loan record
 export async function insertLoans(data, currentuser) {
+  console.log(data);
   let appDate = new Date(
     data['approveddate'] === undefined || data['approveddate'] === ''
       ? '1/1/1900'
@@ -128,6 +130,7 @@ export async function insertLoans(data, currentuser) {
 
 //Update Loan record
 export function updateLoans(data, currentuser) {
+  console.log(data);
   baseiSMLRP('loan').update(
     [
       {

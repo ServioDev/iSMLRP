@@ -122,7 +122,8 @@ export default function TransactionForm(props) {
           function page(records, fetchNextPage) {
             records.forEach(function (record) {
               if (record.fields['d'.concat(diffInDays)] !== undefined) {
-                valueExist += record.fields['d'.concat(diffInDays)];
+                if (record.fields['d'.concat(diffInDays)] !== '~')
+                  valueExist += record.fields['d'.concat(diffInDays)];
               }
             });
             fetchNextPage();
@@ -135,7 +136,6 @@ export default function TransactionForm(props) {
             valueExist = valueExist.trim();
             if (valueExist.length > 0) {
               values['transactiondate'] = '';
-              console.log(valueExist.length, valueExist);
               setValues(values);
               setOpenAlert(true);
               setEnable(true);
@@ -215,14 +215,20 @@ export default function TransactionForm(props) {
 
   //Get Loan data from airtable
   const CheckTransactionYear = () => {
+    const myArray = values['id'].split(',');
+    let transBaseID =
+      myArray.length > 1 ? myArray[2] : values['transactionbase'];
+
+    let loanID = myArray.length > 1 ? myArray[0] : values['loanid'];
+
     const transiSMLRP = new Airtable({
       apiKey: process.env.REACT_APP_AIRTABLE_API_KEY,
-    }).base(values['transactionbase']);
+    }).base(transBaseID);
 
     let filter = "AND({loanid} = '".concat(
-      values['loanid'],
+      loanID,
       "',{year}=",
-      values['transactiondate'].getFullYear(),
+      new Date(values['transactiondate']).getFullYear(),
       ')'
     );
 
@@ -237,7 +243,7 @@ export default function TransactionForm(props) {
           initializeTransactionAdd(
             values,
             currentUser.email,
-            values['transactiondate'].getFullYear()
+            new Date(values['transactiondate']).getFullYear()
           );
           setOpenAlert2(true);
         } else {

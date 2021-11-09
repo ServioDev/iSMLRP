@@ -402,6 +402,8 @@ export default function Loan() {
                               className={classes.status}
                               style={{
                                 backgroundColor:
+                                  (item.fields['status'] === 'New' &&
+                                    '#74ed74') ||
                                   (item.fields['status'] === 'Reamortization' &&
                                     '#74ed74') ||
                                   (item.fields['status'] === 'Completed' &&
@@ -554,6 +556,8 @@ export default function Loan() {
                               className={classes.status}
                               style={{
                                 backgroundColor:
+                                  (item.fields['status'] === 'New' &&
+                                    '#74ed74') ||
                                   (item.fields['status'] === 'Reamortization' &&
                                     '#74ed74') ||
                                   (item.fields['status'] === 'Completed' &&

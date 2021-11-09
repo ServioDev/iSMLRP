@@ -158,6 +158,7 @@ const updateTransactionDetails = async (
   currentuser,
   transCol
 ) => {
+  console.log(details.id);
   transiSMLRP('transaction').update(
     [
       {
@@ -862,7 +863,7 @@ const updatePrincipalAmount = async (transiSMLRP, details, currentuser) => {
                       {
                         id: loanrefid,
                         fields: {
-                          status: 'Paying',
+                          //status: 'Paying',
                           principalamountbalance: pAmount - totalPAmount,
                           modifiedby: currentuser,
                         },
@@ -937,7 +938,7 @@ function updateInterestAmount(transiSMLRP, details, currentuser) {
                       {
                         id: loanrefid,
                         fields: {
-                          status: 'Paying',
+                          //status: 'Paying',
                           interestamountbalance: iAmount - totalIAmount,
                           modifiedby: currentuser,
                         },

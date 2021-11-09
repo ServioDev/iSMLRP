@@ -196,6 +196,7 @@ export default function LoanForm(props) {
     values['nextduedate'] = sDate;
 
     if (newRecord) {
+      values['loanid'] = values['newnumber'];
       pAmountBalance = loanAmount;
       iAmountBalance = loanAmount * (interestRate / 100) * payingPeriod;
       values['payableamount'] =
