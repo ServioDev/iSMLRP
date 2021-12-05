@@ -8,6 +8,10 @@ import {
 } from '@material-ui/core';
 
 export default function Select(props) {
+  const fontColor = {
+    style: { color: 'rgb(50, 50, 50)' },
+  };
+
   const {
     name,
     label,
@@ -26,6 +30,7 @@ export default function Select(props) {
         name={name}
         size="small"
         value={value}
+        inputProps={fontColor}
         disabled={disabled}
         onChange={onChange}
       >
