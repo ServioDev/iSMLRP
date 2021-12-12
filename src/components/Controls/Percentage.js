@@ -3,6 +3,10 @@ import { TextField } from '@material-ui/core';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
 export default function Percentage(props) {
+  const fontColor = {
+    style: { color: 'rgb(50, 50, 50)' },
+  };
+
   const {
     name,
     label,
@@ -23,6 +27,7 @@ export default function Percentage(props) {
       name={name}
       size="small"
       value={value}
+      inputProps={fontColor}
       disabled={disabled}
       onChange={onChange}
       {...other}

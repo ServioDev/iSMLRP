@@ -12,6 +12,7 @@ import ReportTransaction from './ReportTransaction';
 import ReportTransactionAll from './ReportTransactionAll';
 import ReportDisclosure from './ReportDisclosure';
 import ReportAmortization from './ReportAmortization';
+import ReportStatement from './StatementOfAccount';
 import ReportPromisory from './ReportPromisory';
 import ReportCR from './ReportCR';
 import Popup from '../../components/Popup/Popup';
@@ -72,6 +73,7 @@ export default function Report() {
   const [openLedger, setOpenLedger] = useState(false);
   const [openDisclosure, setOpenDisclosure] = useState(false);
   const [openAmortization, setOpenAmortization] = useState(false);
+  const [openStatement, setOpenstatement] = useState(false);
   const [openPromisory, setOpenPromisory] = useState(false);
   const [openCR, setOpenCR] = useState(false);
 
@@ -106,6 +108,9 @@ export default function Report() {
         break;
       case 'amortization':
         setOpenAmortization(true);
+        break;
+      case 'statement':
+        setOpenstatement(true);
         break;
       case 'promisory':
         setOpenPromisory(true);
@@ -203,6 +208,13 @@ export default function Report() {
                 setOpenPopup={setOpenDisclosure}
               >
                 <ReportDisclosure />
+              </Popup>
+              <Popup
+                title="Statement of Account"
+                openPopup={openStatement}
+                setOpenPopup={setOpenstatement}
+              >
+                <ReportStatement />
               </Popup>
               <Popup
                 title="Amortization Table"

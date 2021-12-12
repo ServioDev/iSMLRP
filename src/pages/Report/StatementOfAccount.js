@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ReportAmortization() {
+export default function ReportStatement() {
   const classes = useStyles();
   const [loanList, setLoanList] = useState();
   const [selectedLoan, setSelectedLoan] = useState(null);
@@ -295,10 +295,6 @@ export default function ReportAmortization() {
                           transactiondate: result[i3].fields['transactiondate'],
                           year: result[i3].fields['year'],
                           month: result[i3].fields['month'],
-                          disbursementamount:
-                            result[i3].fields['disbursementamount'],
-                          processingfee: result[i3].fields['processingfee'],
-                          vat: result[i3].fields['vat'],
                           principalamount: result[i3].fields['principalamount'],
                           interestamount: result[i3].fields['interestamount'],
                           penaltyamount: result[i3].fields['penaltyamount'],
@@ -307,15 +303,6 @@ export default function ReportAmortization() {
                         },
                       });
                     } else {
-                      result2[index].fields['disbursementamount'] =
-                        result2[index].fields['disbursementamount'] +
-                        result[i3].fields['disbursementamount'];
-                      result2[index].fields['processingfee'] =
-                        result2[index].fields['processingfee'] +
-                        result[i3].fields['processingfee'];
-                      result2[index].fields['vat'] =
-                        result2[index].fields['vat'] + result[i3].fields['vat'];
-
                       result2[index].fields['principalamount'] =
                         result2[index].fields['principalamount'] +
                         result[i3].fields['principalamount'];
@@ -382,26 +369,24 @@ export default function ReportAmortization() {
                       }
                     }
 
-                    //if (result3[i6].fields['totalpayable'] > 0) {
-                    result4.push({
-                      id: result3[i6].id,
-                      fields: {
-                        transactiondate: result3[i6].fields['transactiondate'],
-                        year: result3[i6].fields['year'],
-                        month: result3[i6].fields['month'],
-                        disbursementamount:
-                          result3[i6].fields['disbursementamount'],
-                        processingfee: result3[i6].fields['processingfee'],
-                        principalamount: result3[i6].fields['principalamount'],
-                        interestamount: result3[i6].fields['interestamount'],
-                        penaltyamount: result3[i6].fields['penaltyamount'],
-                        vat: result3[i6].fields['vat'],
-                        totalpayable: result3[i6].fields['totalpayable'],
-                        balancefinal: result3[i6].fields['balancefinal'],
-                        transactions: result4details,
-                      },
-                    });
-                    //}
+                    if (result3[i6].fields['totalpayable'] > 0) {
+                      result4.push({
+                        id: result3[i6].id,
+                        fields: {
+                          transactiondate:
+                            result3[i6].fields['transactiondate'],
+                          year: result3[i6].fields['year'],
+                          month: result3[i6].fields['month'],
+                          principalamount:
+                            result3[i6].fields['principalamount'],
+                          interestamount: result3[i6].fields['interestamount'],
+                          penaltyamount: result3[i6].fields['penaltyamount'],
+                          totalpayable: result3[i6].fields['totalpayable'],
+                          balancefinal: result3[i6].fields['balancefinal'],
+                          transactions: result4details,
+                        },
+                      });
+                    }
                   }
 
                   setTransTemp(result4);
@@ -571,7 +556,7 @@ export default function ReportAmortization() {
         <table className="table-td-header">
           <tr>
             <td width="100%">
-              <b>Amortization Schedule</b>
+              <b>Statement of Account</b>
             </td>
           </tr>
         </table>
@@ -797,62 +782,40 @@ export default function ReportAmortization() {
             <td colSpan="7">Payments</td>
           </tr>
           <tr>
-            <td width="8%" className="table-tr-box-center">
+            <td width="13%" className="table-tr-box-center">
               Year
             </td>
-            <td width="8%" className="table-tr-box-center">
+            <td width="13%" className="table-tr-box-center">
               Month
             </td>
             <td width="13%" className="table-tr-box-center">
-              Disbursement
-            </td>
-            <td width="15%" className="table-tr-box-center">
-              Processing Fee
-            </td>
-            <td width="10%" className="table-tr-box-center">
               Principal
             </td>
-            <td width="10%" className="table-tr-box-center">
+            <td width="13%" className="table-tr-box-center">
               Interest
             </td>
-            <td width="9%" className="table-tr-box-center">
+            <td width="13%" className="table-tr-box-center">
               VAT
             </td>
-            <td width="13%" className="table-tr-box-center">
+            <td width="20%" className="table-tr-box-center">
               Total Payment
             </td>
-            <td width="14%" className="table-tr-box-center">
+            <td width="15%" className="table-tr-box-center">
               Balance
             </td>
           </tr>
           {transTemp.map((item) => (
             <tr>
-              <td width="8%" className="table-tr-box-center">
+              <td width="13%" className="table-tr-box-center">
                 {new Date(item.fields['transactiondate']).getFullYear()}
               </td>
-              <td width="8%" className="table-tr-box-center">
+              <td width="13%" className="table-tr-box-center">
                 {dateAddVal
                   .GetMonthName(new Date(item.fields['transactiondate']))
                   .substring(0, 3)
                   .toUpperCase()}
               </td>
               <td width="13%" className="table-tr-box-center">
-                {item.fields['disbursementamount']
-                  ? item.fields['disbursementamount'].toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'Php',
-                    })
-                  : 0}
-              </td>
-              <td width="15%" className="table-tr-box-center">
-                {item.fields['processingfee']
-                  ? item.fields['processingfee'].toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'Php',
-                    })
-                  : 0}
-              </td>
-              <td width="10%" className="table-tr-box-center">
                 {item.fields['principalamount']
                   ? item.fields['principalamount'].toLocaleString('en-US', {
                       style: 'currency',
@@ -860,7 +823,7 @@ export default function ReportAmortization() {
                     })
                   : 0}
               </td>
-              <td width="10%" className="table-tr-box-center">
+              <td width="13%" className="table-tr-box-center">
                 {item.fields['interestamount']
                   ? item.fields['interestamount'].toLocaleString('en-US', {
                       style: 'currency',
@@ -868,7 +831,7 @@ export default function ReportAmortization() {
                     })
                   : 0}
               </td>
-              <td width="9%" className="table-tr-box-center">
+              <td width="13%" className="table-tr-box-center">
                 {item.fields['vat']
                   ? item.fields['vat'].toLocaleString('en-US', {
                       style: 'currency',
@@ -876,7 +839,7 @@ export default function ReportAmortization() {
                     })
                   : 0}
               </td>
-              <td width="13%" className="table-tr-box-center">
+              <td width="20%" className="table-tr-box-center">
                 {item.fields['totalpayable']
                   ? item.fields['totalpayable'].toLocaleString('en-US', {
                       style: 'currency',
@@ -884,7 +847,7 @@ export default function ReportAmortization() {
                     })
                   : 0}
               </td>
-              <td width="14%" className="table-tr-box-center">
+              <td width="15%" className="table-tr-box-center">
                 {item.fields['balancefinal']
                   ? item.fields['balancefinal'].toLocaleString('en-US', {
                       style: 'currency',
