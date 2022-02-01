@@ -68,6 +68,11 @@ export default function ReportLedger() {
   const [isLoading, setLoading] = useState(false);
   const disabled = true;
 
+  const [totalPrincipalamount, setTotalPrincipalamount] = useState(0);
+  const [totalInterestamount, setTotalInterestamount] = useState(0);
+  const [totalVat, setTotalVat] = useState(0);
+  const [totalPenaltyamount, setTotalPenaltyamount] = useState(0);
+
   const handleLoanSearch = (e) => {
     setSelectedLoan(e.target.value);
     e.target.value ? setEnableOpen(false) : setEnableOpen(true);
@@ -396,6 +401,32 @@ export default function ReportLedger() {
                       });
                     }
                   }
+
+                  let totalPrincipalamount = result4.reduce(function (
+                    prev,
+                    cur
+                  ) {
+                    return prev + cur.fields['principalamount'];
+                  },
+                  0);
+                  let totalInterestamount = result4.reduce(function (
+                    prev,
+                    cur
+                  ) {
+                    return prev + cur.fields['interestamount'];
+                  },
+                  0);
+                  let totalVat = result4.reduce(function (prev, cur) {
+                    return prev + cur.fields['vat'];
+                  }, 0);
+                  let totalPenaltyamount = result4.reduce(function (prev, cur) {
+                    return prev + cur.fields['penaltyamount'];
+                  }, 0);
+
+                  setTotalPrincipalamount(totalPrincipalamount);
+                  setTotalInterestamount(totalInterestamount);
+                  setTotalVat(totalVat);
+                  setTotalPenaltyamount(totalPenaltyamount);
 
                   setTransTemp(result4);
 
@@ -753,7 +784,7 @@ export default function ReportLedger() {
                   .substring(0, 3)
                   .toUpperCase()}
               </td>
-              <td width="15%" className="table-tr-box-center">
+              <td width="15%" className="table-tr-box-amount">
                 {item.fields['principalamount']
                   ? item.fields['principalamount'].toLocaleString('en-US', {
                       style: 'currency',
@@ -761,7 +792,7 @@ export default function ReportLedger() {
                     })
                   : 0}
               </td>
-              <td width="15%" className="table-tr-box-center">
+              <td width="15%" className="table-tr-box-amount">
                 {item.fields['interestamount']
                   ? item.fields['interestamount'].toLocaleString('en-US', {
                       style: 'currency',
@@ -769,7 +800,7 @@ export default function ReportLedger() {
                     })
                   : 0}
               </td>
-              <td width="15%" className="table-tr-box-center">
+              <td width="15%" className="table-tr-box-amount">
                 {item.fields['penaltyamount']
                   ? item.fields['penaltyamount'].toLocaleString('en-US', {
                       style: 'currency',
@@ -777,7 +808,7 @@ export default function ReportLedger() {
                     })
                   : 0}
               </td>
-              <td width="15%" className="table-tr-box-center">
+              <td width="15%" className="table-tr-box-amount">
                 {item.fields['vat']
                   ? item.fields['vat'].toLocaleString('en-US', {
                       style: 'currency',
@@ -785,16 +816,75 @@ export default function ReportLedger() {
                     })
                   : 0}
               </td>
-              <td width="20%" className="table-tr-box-center">
-                {item.fields['totalpayable']
-                  ? item.fields['totalpayable'].toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'Php',
-                    })
-                  : 0}
+              <td width="20%" className="table-tr-box-amount">
+                {(
+                  (item.fields['principalamount'] > 0
+                    ? item.fields['principalamount']
+                    : 0) +
+                  (item.fields['interestamount'] > 0
+                    ? item.fields['interestamount']
+                    : 0) +
+                  (item.fields['penaltyamount'] > 0
+                    ? item.fields['penaltyamount']
+                    : 0) +
+                  (item.fields['vat'] > 0 ? item.fields['vat'] : 0)
+                ).toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'Php',
+                })}
               </td>
             </tr>
           ))}
+          <tr>
+            <td width="20%" className="table-tr-box-center" colSpan={2}>
+              {' '}
+              Total
+            </td>
+            <td width="17%" className="table-tr-box-amount">
+              {(totalPrincipalamount > 0
+                ? totalPrincipalamount
+                : 0
+              ).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'Php',
+              })}
+            </td>
+            <td width="16%" className="table-tr-box-amount">
+              {(totalInterestamount > 0
+                ? totalInterestamount
+                : 0
+              ).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'Php',
+              })}
+            </td>
+            <td width="15%" className="table-tr-box-amount">
+              {(totalPenaltyamount > 0 ? totalPenaltyamount : 0).toLocaleString(
+                'en-US',
+                {
+                  style: 'currency',
+                  currency: 'Php',
+                }
+              )}
+            </td>
+            <td width="12%" className="table-tr-box-amount">
+              {(totalVat > 0 ? totalVat : 0).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'Php',
+              })}
+            </td>
+            <td width="20%" className="table-tr-box-amount">
+              {(
+                (totalPrincipalamount > 0 ? totalPrincipalamount : 0) +
+                (totalInterestamount > 0 ? totalInterestamount : 0) +
+                (totalPenaltyamount > 0 ? totalPenaltyamount : 0) +
+                (totalVat > 0 ? totalVat : 0)
+              ).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'Php',
+              })}
+            </td>
+          </tr>
         </table>
       </div>
     </div>

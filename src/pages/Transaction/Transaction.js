@@ -130,6 +130,12 @@ export default function Transaction() {
       return items;
     },
   };
+  const [totalDisbursementamount, setTotalDisbursementamount] = useState(0);
+  const [totalProcessingfee, setTotalProcessingfee] = useState(0);
+  const [totalPrincipalamount, setTotalPrincipalamount] = useState(0);
+  const [totalInterestamount, setTotalInterestamount] = useState(0);
+  const [totalVat, setTotalVat] = useState(0);
+  const [totalPenaltyamount, setTotalPenaltyamount] = useState(0);
 
   //Get current user information and access
   const GetUserCollection = () => {
@@ -371,6 +377,39 @@ export default function Transaction() {
                     }
                   }
 
+                  let totalDisbursementamount = result.reduce(function (
+                    prev,
+                    cur
+                  ) {
+                    return prev + cur.fields['disbursementamount'];
+                  },
+                  0);
+                  let totalProcessingfee = result.reduce(function (prev, cur) {
+                    return prev + cur.fields['processingfee'];
+                  }, 0);
+                  let totalPrincipalamount = result.reduce(function (
+                    prev,
+                    cur
+                  ) {
+                    return prev + cur.fields['principalamount'];
+                  },
+                  0);
+                  let totalInterestamount = result.reduce(function (prev, cur) {
+                    return prev + cur.fields['interestamount'];
+                  }, 0);
+                  let totalVat = result.reduce(function (prev, cur) {
+                    return prev + cur.fields['vat'];
+                  }, 0);
+                  let totalPenaltyamount = result.reduce(function (prev, cur) {
+                    return prev + cur.fields['penaltyamount'];
+                  }, 0);
+
+                  setTotalDisbursementamount(totalDisbursementamount);
+                  setTotalProcessingfee(totalProcessingfee);
+                  setTotalPrincipalamount(totalPrincipalamount);
+                  setTotalInterestamount(totalInterestamount);
+                  setTotalVat(totalVat);
+                  setTotalPenaltyamount(totalPenaltyamount);
                   setTransaction(result);
                   setLoading(false);
                   fetchNextPage();
@@ -966,6 +1005,62 @@ export default function Transaction() {
                           </TableCell>
                         </StyledTableRow>
                       ))}
+                      <StyledTableRow>
+                        <TableCell></TableCell>
+                        <TableCell>Total Amount</TableCell>
+                        <TableCell align="right">
+                          {parseFloat(totalDisbursementamount).toLocaleString(
+                            'en-US',
+                            {
+                              style: 'currency',
+                              currency: 'Php',
+                            }
+                          )}
+                        </TableCell>
+                        <TableCell align="right">
+                          {parseFloat(totalProcessingfee).toLocaleString(
+                            'en-US',
+                            {
+                              style: 'currency',
+                              currency: 'Php',
+                            }
+                          )}
+                        </TableCell>
+                        <TableCell align="right">
+                          {parseFloat(totalPrincipalamount).toLocaleString(
+                            'en-US',
+                            {
+                              style: 'currency',
+                              currency: 'Php',
+                            }
+                          )}
+                        </TableCell>
+                        <TableCell align="right">
+                          {parseFloat(totalInterestamount).toLocaleString(
+                            'en-US',
+                            {
+                              style: 'currency',
+                              currency: 'Php',
+                            }
+                          )}
+                        </TableCell>
+                        <TableCell align="right">
+                          {parseFloat(totalVat).toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'Php',
+                          })}
+                        </TableCell>
+                        <TableCell align="right">
+                          {parseFloat(totalPenaltyamount).toLocaleString(
+                            'en-US',
+                            {
+                              style: 'currency',
+                              currency: 'Php',
+                            }
+                          )}
+                        </TableCell>
+                        <TableCell colSpan={2}></TableCell>
+                      </StyledTableRow>
                     </TableBody>
                   </TblContainer>
                 )}

@@ -281,6 +281,11 @@ export default function Ledger() {
     },
   };
 
+  const [totalPrincipalamount, setTotalPrincipalamount] = useState(0);
+  const [totalInterestamount, setTotalInterestamount] = useState(0);
+  const [totalPayable, setTotalPayable] = useState(0);
+  const [totalBalance, setTotalBalance] = useState(0);
+
   //Handle search event
   const handleLoanSearch = (e) => {
     setSelectedLoan(e.target.value);
@@ -632,6 +637,25 @@ export default function Ledger() {
       });
     }
 
+    let totalPrincipalamount = result4.reduce(function (prev, cur) {
+      return prev + cur.fields['principalamount'];
+    }, 0);
+    let totalInterestamount = result4.reduce(function (prev, cur) {
+      return prev + cur.fields['interestamount'];
+    }, 0);
+    let totalPayable = result4.reduce(function (prev, cur) {
+      return prev + cur.fields['totalpayable'];
+    }, 0);
+    let totalBalance =
+      result4.length > 0
+        ? result4[result4.length - 1].fields['balancefinal']
+        : 0;
+
+    setTotalPrincipalamount(totalPrincipalamount);
+    setTotalInterestamount(totalInterestamount);
+    setTotalPayable(totalPayable);
+    setTotalBalance(totalBalance);
+
     setLedger(result4);
     setLoading(false);
   };
@@ -972,6 +996,39 @@ export default function Ledger() {
                       </Table>
                     </TblContainer>
                   )}
+                  <StyledTableRow>
+                    <TableCell width={260} align="right">
+                      Total Amount
+                    </TableCell>
+                    <TableCell width={295} align="right">
+                      {parseFloat(totalPrincipalamount).toLocaleString(
+                        'en-US',
+                        {
+                          style: 'currency',
+                          currency: 'Php',
+                        }
+                      )}
+                    </TableCell>
+                    <TableCell width={215} align="right">
+                      {parseFloat(totalInterestamount).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'Php',
+                      })}
+                    </TableCell>
+                    <TableCell width={195} align="right">
+                      {parseFloat(totalPayable).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'Php',
+                      })}
+                    </TableCell>
+                    <TableCell width={175} align="right">
+                      {parseFloat(totalBalance).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'Php',
+                      })}
+                    </TableCell>
+                    <TableCell width={75}></TableCell>
+                  </StyledTableRow>
                   <TblPagination />
                 </TableContainer>
               </Paper>
