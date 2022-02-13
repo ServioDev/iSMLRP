@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import '../../assets/styelesheets/Report.css';
+import Logo from '../../assets/Images/Logo_Bar.png';
+import { useAuth } from '../../contexts/AuthContext';
 import Controls from '../../components/Controls/Controls';
 import Pdf from 'react-to-pdf';
 import { baseiSMLRP } from '../../api/Api';
@@ -56,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ReportAmortization() {
+  const { currentUser } = useAuth();
   const classes = useStyles();
   const [loanList, setLoanList] = useState();
   const [selectedLoan, setSelectedLoan] = useState(null);
@@ -567,6 +570,13 @@ export default function ReportAmortization() {
           padding: '10mm',
         }}
       >
+        <table className="table-td-left">
+          <tr>
+            <td width="100%">
+              <img src={Logo} alt="Logo" width={120} height={35} />
+            </td>
+          </tr>
+        </table>
         <br />
         <table className="table-td-header">
           <tr>
@@ -797,62 +807,40 @@ export default function ReportAmortization() {
             <td colSpan="7">Payments</td>
           </tr>
           <tr>
-            <td width="8%" className="table-tr-box-center">
+            <td width="10%" className="table-tr-box-center">
               Year
             </td>
-            <td width="8%" className="table-tr-box-center">
+            <td width="10%" className="table-tr-box-center">
               Month
             </td>
-            <td width="13%" className="table-tr-box-center">
-              Disbursement
-            </td>
             <td width="15%" className="table-tr-box-center">
-              Processing Fee
-            </td>
-            <td width="10%" className="table-tr-box-center">
               Principal
             </td>
-            <td width="10%" className="table-tr-box-center">
+            <td width="15%" className="table-tr-box-center">
               Interest
             </td>
-            <td width="9%" className="table-tr-box-center">
+            <td width="15%" className="table-tr-box-center">
               VAT
             </td>
-            <td width="13%" className="table-tr-box-center">
+            <td width="15%" className="table-tr-box-center">
               Total Payment
             </td>
-            <td width="14%" className="table-tr-box-center">
+            <td width="20%" className="table-tr-box-center">
               Balance
             </td>
           </tr>
           {transTemp.map((item) => (
             <tr>
-              <td width="8%" className="table-tr-box-center">
+              <td width="10%" className="table-tr-box-center">
                 {new Date(item.fields['transactiondate']).getFullYear()}
               </td>
-              <td width="8%" className="table-tr-box-center">
+              <td width="10%" className="table-tr-box-center">
                 {dateAddVal
                   .GetMonthName(new Date(item.fields['transactiondate']))
                   .substring(0, 3)
                   .toUpperCase()}
               </td>
-              <td width="13%" className="table-tr-box-center">
-                {item.fields['disbursementamount']
-                  ? item.fields['disbursementamount'].toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'Php',
-                    })
-                  : 0}
-              </td>
               <td width="15%" className="table-tr-box-center">
-                {item.fields['processingfee']
-                  ? item.fields['processingfee'].toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'Php',
-                    })
-                  : 0}
-              </td>
-              <td width="10%" className="table-tr-box-center">
                 {item.fields['principalamount']
                   ? item.fields['principalamount'].toLocaleString('en-US', {
                       style: 'currency',
@@ -860,7 +848,7 @@ export default function ReportAmortization() {
                     })
                   : 0}
               </td>
-              <td width="10%" className="table-tr-box-center">
+              <td width="15%" className="table-tr-box-center">
                 {item.fields['interestamount']
                   ? item.fields['interestamount'].toLocaleString('en-US', {
                       style: 'currency',
@@ -868,7 +856,7 @@ export default function ReportAmortization() {
                     })
                   : 0}
               </td>
-              <td width="9%" className="table-tr-box-center">
+              <td width="15%" className="table-tr-box-center">
                 {item.fields['vat']
                   ? item.fields['vat'].toLocaleString('en-US', {
                       style: 'currency',
@@ -876,7 +864,7 @@ export default function ReportAmortization() {
                     })
                   : 0}
               </td>
-              <td width="13%" className="table-tr-box-center">
+              <td width="15%" className="table-tr-box-center">
                 {item.fields['totalpayable']
                   ? item.fields['totalpayable'].toLocaleString('en-US', {
                       style: 'currency',
@@ -884,7 +872,7 @@ export default function ReportAmortization() {
                     })
                   : 0}
               </td>
-              <td width="14%" className="table-tr-box-center">
+              <td width="20%" className="table-tr-box-center">
                 {item.fields['balancefinal']
                   ? item.fields['balancefinal'].toLocaleString('en-US', {
                       style: 'currency',
@@ -913,10 +901,14 @@ export default function ReportAmortization() {
           </tr>
           <tr>
             <td width="20%"></td>
-            <td width="25%" className="table-tr-line"></td>
+            <td width="25%" className="table-tr-line">
+              {currentUser.email}
+            </td>
             <td width="10%"></td>
             <td width="20%"></td>
-            <td width="25%" className="table-tr-line"></td>
+            <td width="25%" className="table-tr-line">
+              {loan['borrowername']}
+            </td>
           </tr>
           <tr>
             <td width="20%"></td>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Pdf from 'react-to-pdf';
+import Logo from '../../assets/Images/Logo_Bar.png';
 import '../../assets/styelesheets/Report.css';
 import Controls from '../../components/Controls/Controls';
 import { baseiSMLRP } from '../../api/Api';
@@ -233,6 +234,13 @@ export default function ReportDisclosure() {
           padding: '10mm',
         }}
       >
+        <table className="table-td-left">
+          <tr>
+            <td width="100%">
+              <img src={Logo} alt="Logo" width={120} height={35} />
+            </td>
+          </tr>
+        </table>
         <br></br>
         <table className="table-td-header">
           <tr>

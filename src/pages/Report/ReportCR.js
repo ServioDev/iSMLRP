@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import '../../assets/styelesheets/Report.css';
 import Controls from '../../components/Controls/Controls';
+import Logo from '../../assets/Images/Logo_Bar.png';
+import { useAuth } from '../../contexts/AuthContext';
 import Pdf from 'react-to-pdf';
 import { baseiSMLRP } from '../../api/Api';
 import { Form } from '../../components/Template/TempForm';
@@ -58,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ReportCR() {
   const classes = useStyles();
+  const { currentUser } = useAuth();
   const [loanList, setLoanList] = useState();
   const [transList, setTransList] = useState();
   const [selectedLoan, setSelectedLoan] = useState(null);
@@ -462,6 +465,13 @@ export default function ReportCR() {
           padding: '10mm',
         }}
       >
+        <table className="table-td-left">
+          <tr>
+            <td width="100%">
+              <img src={Logo} alt="Logo" width={120} height={35} />
+            </td>
+          </tr>
+        </table>
         <br />
         <table className="table-td-header">
           <tr>
@@ -692,10 +702,14 @@ export default function ReportCR() {
           </tr>
           <tr>
             <td width="20%">Certified Correct:</td>
-            <td width="25%" className="table-tr-line"></td>
+            <td width="25%" className="table-tr-line">
+              {currentUser.email}
+            </td>
             <td width="10%"></td>
             <td width="20%">Received By: </td>
-            <td width="25%" className="table-tr-line"></td>
+            <td width="25%" className="table-tr-line">
+              {loan['borrowername']}
+            </td>
           </tr>
           <tr>
             <td colSpan="5" />
@@ -941,10 +955,14 @@ export default function ReportCR() {
           </tr>
           <tr>
             <td width="20%">Certified Correct:</td>
-            <td width="25%" className="table-tr-line"></td>
+            <td width="25%" className="table-tr-line">
+              {currentUser.email}
+            </td>
             <td width="10%"></td>
             <td width="20%">Received By: </td>
-            <td width="25%" className="table-tr-line"></td>
+            <td width="25%" className="table-tr-line">
+              {loan['borrowername']}
+            </td>
           </tr>
           <tr>
             <td colSpan="5" />
@@ -1190,10 +1208,14 @@ export default function ReportCR() {
           </tr>
           <tr>
             <td width="20%">Certified Correct:</td>
-            <td width="25%" className="table-tr-line"></td>
+            <td width="25%" className="table-tr-line">
+              {currentUser.email}
+            </td>
             <td width="10%"></td>
             <td width="20%">Received By: </td>
-            <td width="25%" className="table-tr-line"></td>
+            <td width="25%" className="table-tr-line">
+              {loan['borrowername']}
+            </td>
           </tr>
           <tr>
             <td colSpan="5" />

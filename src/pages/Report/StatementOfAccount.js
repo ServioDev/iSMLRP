@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import '../../assets/styelesheets/Report.css';
+import Logo from '../../assets/Images/Logo_Bar.png';
+import { useAuth } from '../../contexts/AuthContext';
 import Controls from '../../components/Controls/Controls';
 import Pdf from 'react-to-pdf';
 import { baseiSMLRP } from '../../api/Api';
@@ -56,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ReportStatement() {
+  const { currentUser } = useAuth();
   const classes = useStyles();
   const [loanList, setLoanList] = useState();
   const [selectedLoan, setSelectedLoan] = useState(null);
@@ -552,6 +555,13 @@ export default function ReportStatement() {
           padding: '10mm',
         }}
       >
+        <table className="table-td-left">
+          <tr>
+            <td width="100%">
+              <img src={Logo} alt="Logo" width={120} height={35} />
+            </td>
+          </tr>
+        </table>
         <br />
         <table className="table-td-header">
           <tr>
@@ -795,13 +805,13 @@ export default function ReportStatement() {
               Interest
             </td>
             <td width="13%" className="table-tr-box-center">
-              VAT
+              Penalty
             </td>
             <td width="20%" className="table-tr-box-center">
-              Total Payment
+              VAT
             </td>
             <td width="15%" className="table-tr-box-center">
-              Balance
+              Total
             </td>
           </tr>
           {transTemp.map((item) => (
@@ -832,6 +842,14 @@ export default function ReportStatement() {
                   : 0}
               </td>
               <td width="13%" className="table-tr-box-center">
+                {item.fields['penaltyamount']
+                  ? item.fields['penaltyamount'].toLocaleString('en-US', {
+                      style: 'currency',
+                      currency: 'Php',
+                    })
+                  : 0}
+              </td>
+              <td width="20%" className="table-tr-box-center">
                 {item.fields['vat']
                   ? item.fields['vat'].toLocaleString('en-US', {
                       style: 'currency',
@@ -839,17 +857,9 @@ export default function ReportStatement() {
                     })
                   : 0}
               </td>
-              <td width="20%" className="table-tr-box-center">
+              <td width="15%" className="table-tr-box-center">
                 {item.fields['totalpayable']
                   ? item.fields['totalpayable'].toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'Php',
-                    })
-                  : 0}
-              </td>
-              <td width="15%" className="table-tr-box-center">
-                {item.fields['balancefinal']
-                  ? item.fields['balancefinal'].toLocaleString('en-US', {
                       style: 'currency',
                       currency: 'Php',
                     })
@@ -876,10 +886,14 @@ export default function ReportStatement() {
           </tr>
           <tr>
             <td width="20%"></td>
-            <td width="25%" className="table-tr-line"></td>
+            <td width="25%" className="table-tr-line">
+              {currentUser.email}
+            </td>
             <td width="10%"></td>
             <td width="20%"></td>
-            <td width="25%" className="table-tr-line"></td>
+            <td width="25%" className="table-tr-line">
+              {loan['borrowername']}
+            </td>
           </tr>
           <tr>
             <td width="20%"></td>

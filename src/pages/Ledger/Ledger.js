@@ -95,8 +95,8 @@ const headCells = [
   { id: 'month', label: 'Month', minWidth: 100 },
   { id: 'principalamount', label: 'Principal Amount', minWidth: 120 },
   { id: 'interestamount', label: 'Interest Amount', minWidth: 120 },
+  { id: 'penaltyamount', label: 'Penalty Amount', minWidth: 150 },
   { id: 'totalpayable', label: 'Total Payable', minWidth: 150 },
-  { id: 'balance', label: 'Balance', minWidth: 150 },
   { id: 'action2', label: ' ', disableSorting: true, minWidth: 30 },
 ];
 
@@ -143,8 +143,8 @@ function Row(props) {
               })}
         </TableCell>
         <TableCell align="right">
-          {row.fields['totalpayable']
-            ? row.fields['totalpayable'].toLocaleString('en-US', {
+          {row.fields['penaltyamount']
+            ? row.fields['penaltyamount'].toLocaleString('en-US', {
                 style: 'currency',
                 currency: 'Php',
               })
@@ -154,8 +154,8 @@ function Row(props) {
               })}
         </TableCell>
         <TableCell align="right">
-          {row.fields['balancefinal']
-            ? row.fields['balancefinal'].toLocaleString('en-US', {
+          {row.fields['totalpayable']
+            ? row.fields['totalpayable'].toLocaleString('en-US', {
                 style: 'currency',
                 currency: 'Php',
               })
@@ -284,7 +284,7 @@ export default function Ledger() {
   const [totalPrincipalamount, setTotalPrincipalamount] = useState(0);
   const [totalInterestamount, setTotalInterestamount] = useState(0);
   const [totalPayable, setTotalPayable] = useState(0);
-  const [totalBalance, setTotalBalance] = useState(0);
+  const [totalPenalty, setTotalPenalty] = useState(0);
 
   //Handle search event
   const handleLoanSearch = (e) => {
@@ -566,6 +566,7 @@ export default function Ledger() {
             month: result[i3].fields['month'],
             principalamount: result[i3].fields['principalamount'],
             interestamount: result[i3].fields['interestamount'],
+            penaltyamount: result[i3].fields['penaltyamount'],
             totalpayable: result[i3].fields['totalpayable'],
             balancefinal: result[i3].fields['balancefinal'],
           },
@@ -577,6 +578,9 @@ export default function Ledger() {
         result2[index].fields['interestamount'] =
           result2[index].fields['interestamount'] +
           result[i3].fields['interestamount'];
+        result2[index].fields['penaltyamount'] =
+          result2[index].fields['penaltyamount'] +
+          result[i3].fields['penaltyamount'];
         result2[index].fields['totalpayable'] =
           result2[index].fields['totalpayable'] +
           result[i3].fields['totalpayable'];
@@ -630,6 +634,7 @@ export default function Ledger() {
           month: result3[i6].fields['month'],
           principalamount: result3[i6].fields['principalamount'],
           interestamount: result3[i6].fields['interestamount'],
+          penaltyamount: result3[i6].fields['penaltyamount'],
           totalpayable: result3[i6].fields['totalpayable'],
           balancefinal: result3[i6].fields['balancefinal'],
           transactions: result4details,
@@ -643,18 +648,17 @@ export default function Ledger() {
     let totalInterestamount = result4.reduce(function (prev, cur) {
       return prev + cur.fields['interestamount'];
     }, 0);
+    let totalPenalty = result4.reduce(function (prev, cur) {
+      return prev + cur.fields['penaltyamount'];
+    }, 0);
     let totalPayable = result4.reduce(function (prev, cur) {
       return prev + cur.fields['totalpayable'];
     }, 0);
-    let totalBalance =
-      result4.length > 0
-        ? result4[result4.length - 1].fields['balancefinal']
-        : 0;
 
     setTotalPrincipalamount(totalPrincipalamount);
     setTotalInterestamount(totalInterestamount);
+    setTotalPenalty(totalPenalty);
     setTotalPayable(totalPayable);
-    setTotalBalance(totalBalance);
 
     setLedger(result4);
     setLoading(false);
@@ -997,10 +1001,10 @@ export default function Ledger() {
                     </TblContainer>
                   )}
                   <StyledTableRow>
-                    <TableCell width={260} align="right">
+                    <TableCell width={250} align="right">
                       Total Amount
                     </TableCell>
-                    <TableCell width={295} align="right">
+                    <TableCell width={290} align="right">
                       {parseFloat(totalPrincipalamount).toLocaleString(
                         'en-US',
                         {
@@ -1015,14 +1019,14 @@ export default function Ledger() {
                         currency: 'Php',
                       })}
                     </TableCell>
-                    <TableCell width={195} align="right">
-                      {parseFloat(totalPayable).toLocaleString('en-US', {
+                    <TableCell width={205} align="right">
+                      {parseFloat(totalPenalty).toLocaleString('en-US', {
                         style: 'currency',
                         currency: 'Php',
                       })}
                     </TableCell>
-                    <TableCell width={175} align="right">
-                      {parseFloat(totalBalance).toLocaleString('en-US', {
+                    <TableCell width={180} align="right">
+                      {parseFloat(totalPayable).toLocaleString('en-US', {
                         style: 'currency',
                         currency: 'Php',
                       })}
