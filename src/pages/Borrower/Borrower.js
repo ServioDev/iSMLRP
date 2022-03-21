@@ -190,7 +190,7 @@ export default function Borrower() {
   const handleCloseAlert = () => {
     setOpenAlert(false);
   };
-
+  
   //Get current user information and access
   const GetUserCollection = () => {
     let filter = "AND({userid} = '".concat(currentUser.email, "')");

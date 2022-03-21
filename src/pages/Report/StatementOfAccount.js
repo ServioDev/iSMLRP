@@ -70,6 +70,7 @@ export default function ReportStatement() {
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [enableOpen, setEnableOpen] = useState(true);
   const [isLoading, setLoading] = useState(false);
+  const [userName, setUserName] = useState('');
   const disabled = true;
 
   const handleLoanSearch = (e) => {
@@ -82,6 +83,18 @@ export default function ReportStatement() {
     setRecordForEdit(item);
     setOpenPopup(true);
   };
+
+  const GetUserRecord = () => {
+    let filter = "AND({userid} = '".concat(currentUser.email, "')");
+    baseiSMLRP('user')
+      .select({ view: 'Users', filterByFormula: filter })
+      .eachPage((records, fetchNextPage) => {
+        setUserName(records[0].fields['username']);
+        fetchNextPage();
+      });
+  };
+
+  GetUserRecord();
 
   //Handle add and update event
   const lookupData = (loanData) => {
@@ -887,7 +900,7 @@ export default function ReportStatement() {
           <tr>
             <td width="20%"></td>
             <td width="25%" className="table-tr-line">
-              {currentUser.email}
+              {userName}
             </td>
             <td width="10%"></td>
             <td width="20%"></td>

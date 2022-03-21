@@ -69,6 +69,7 @@ export default function ReportAmortization() {
   const [openPopup, setOpenPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [enableOpen, setEnableOpen] = useState(true);
+  const [userName, setUserName] = useState('');
   const [isLoading, setLoading] = useState(false);
   const disabled = true;
 
@@ -115,6 +116,18 @@ export default function ReportAmortization() {
       setOpenPopup(false);
     }
   };
+
+  const GetUserRecord = () => {
+    let filter = "AND({userid} = '".concat(currentUser.email, "')");
+    baseiSMLRP('user')
+      .select({ view: 'Users', filterByFormula: filter })
+      .eachPage((records, fetchNextPage) => {
+        setUserName(records[0].fields['username']);
+        fetchNextPage();
+      });
+  };
+
+  GetUserRecord();
 
   const GetTransactionCollection = async () => {
     if (selectedLoan) {
@@ -419,12 +432,14 @@ export default function ReportAmortization() {
   };
 
   const GetLoanCollection = async () => {
+    
     if (selectedLoan) {
       let filter = "AND({loanid} = '".concat(selectedLoan, "')");
       let lList = [];
       baseiSMLRP('loan')
         .select({ view: 'Loans', filterByFormula: filter })
         .eachPage((records, fetchNextPage) => {
+          
           for (let i = 0; i < records.length; i++) {
             if (records !== undefined) {
               lList.push({
@@ -449,9 +464,11 @@ export default function ReportAmortization() {
               });
             }
           }
+          console.log(lList[0]);
           setLoan(lList[0]);
           fetchNextPage();
         });
+        
       await GetBorrowerCollection();
       await GetTransactionCollection();
     }
@@ -902,7 +919,7 @@ export default function ReportAmortization() {
           <tr>
             <td width="20%"></td>
             <td width="25%" className="table-tr-line">
-              {currentUser.email}
+              {userName}
             </td>
             <td width="10%"></td>
             <td width="20%"></td>

@@ -72,6 +72,7 @@ export default function ReportCR() {
   const [openPopup, setOpenPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [enableOpen, setEnableOpen] = useState(true);
+  const [userName, setUserName] = useState('');
   const [isLoading, setLoading] = useState(false);
   const disabled = true;
 
@@ -306,6 +307,18 @@ export default function ReportCR() {
         );
     }
   };
+
+  const GetUserRecord = () => {
+    let filter = "AND({userid} = '".concat(currentUser.email, "')");
+    baseiSMLRP('user')
+      .select({ view: 'Users', filterByFormula: filter })
+      .eachPage((records, fetchNextPage) => {
+        setUserName(records[0].fields['username']);
+        fetchNextPage();
+      });
+  };
+
+  GetUserRecord();
 
   const GetLoanCollection = async () => {
     if (selectedLoan) {
@@ -1209,7 +1222,7 @@ export default function ReportCR() {
           <tr>
             <td width="20%">Certified Correct:</td>
             <td width="25%" className="table-tr-line">
-              {currentUser.email}
+              {userName}
             </td>
             <td width="10%"></td>
             <td width="20%">Received By: </td>
