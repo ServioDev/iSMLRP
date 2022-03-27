@@ -141,7 +141,7 @@ export default function ReportAmortization() {
             id: i,
             fields: {
               year: iYear,
-              month: iMonth + 1,
+              month: new Date(sDate).toLocaleString('en-us',{month:'short'}).toUpperCase(),
               principalamount: parseFloat(loan.monthlyprincipalamount).toFixed(2),
               interestamount: parseFloat(loan.monthlyinterestpayment).toFixed(2),
               vat: parseFloat(loan.monthlyvatpayment).toFixed(2),
