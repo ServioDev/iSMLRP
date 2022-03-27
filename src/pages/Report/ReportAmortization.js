@@ -10,6 +10,7 @@ import Popup from '../../components/Popup/Popup';
 import BorrowerLookup from '../Borrower/BorrowerLookup';
 import OpenInBrowserOutlinedIcon from '@material-ui/icons/OpenInBrowserOutlined';
 import ZoomInOutlinedIcon from '@material-ui/icons/ZoomInOutlined';
+import * as dateAddVal from '../../services/DateAddVal'; 
 import {
   Grid,
   makeStyles,
@@ -18,8 +19,6 @@ import {
   Box,
   LinearProgress,
 } from '@material-ui/core';
-import Airtable from 'airtable';
-import * as dateAddVal from '../../services/DateAddVal';
 
 const ref = React.createRef();
 
@@ -130,305 +129,38 @@ export default function ReportAmortization() {
   GetUserRecord();
 
   const GetTransactionCollection = async () => {
-    if (selectedLoan) {
-      setLoading(true);
-      let transDate = '';
-      let transYear = '';
-      let loanAmount = 0;
-      let filter = "AND({loanid} = '".concat(selectedLoan, "')");
-      baseiSMLRP('loan')
-        .select({ view: 'Loans', filterByFormula: filter })
-        .eachPage(
-          function page(records, fetchNextPage) {
-            records.forEach(function (record) {
-              transYear = record.get('transactionbase');
-              loanAmount =
-                record.get('loanamount') +
-                record.get('monthlyinterestpayment') *
-                  record.get('payingperiod');
-            });
-            fetchNextPage();
-          },
-          function done(err) {
-            if (err) {
-              console.error(err);
-              return;
-            } else {
-              const transiSMLRP = new Airtable({
-                apiKey: process.env.REACT_APP_AIRTABLE_API_KEY,
-              }).base(transYear);
-
-              filter = "AND({loanid} = '".concat(selectedLoan, "')");
-              let lList = [];
-              transiSMLRP('transaction')
-                .select({ view: 'Transactions', filterByFormula: filter })
-                .eachPage((records, fetchNextPage) => {
-                  records.forEach(function (record) {
-                    for (let i2 = 1; i2 <= 366; i2++) {
-                      transDate = Intl.DateTimeFormat('en-US', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                      }).format(
-                        dateAddVal.DateAddVal(
-                          '01/01/'.concat(record.fields['year']),
-                          i2 - 1,
-                          'days'
-                        )
-                      );
-                      if (record.fields['d'.concat(i2)]) {
-                        if (
-                          parseFloat(record.fields['d'.concat(i2)]) > 0 ||
-                          record.fields['d'.concat(i2)] !== '~'
-                        ) {
-                          lList.push({
-                            id: record.fields['loanid'].concat(
-                              ',',
-                              transDate,
-                              ',',
-                              transYear,
-                              ','
-                            ),
-                            fields: {
-                              loanid: record.fields['loanid'],
-                              transactionbase: record.fields['transactionbase'],
-                              transactionnumber: record.id,
-                              transactiondate: transDate,
-                              year: record.fields['year'],
-                              month: dateAddVal
-                                .GetMonthName(
-                                  dateAddVal.DateAddVal(
-                                    '01/01/'.concat(record.fields['year']),
-                                    i2 - 1,
-                                    'days'
-                                  )
-                                )
-                                .substring(0, 3)
-                                .toUpperCase(),
-                              disbursementamount:
-                                record.fields['transactiontype'] ===
-                                'disbursementamount'
-                                  ? parseFloat(record.fields['d'.concat(i2)])
-                                  : 0,
-                              processingfee:
-                                record.fields['transactiontype'] ===
-                                'processingfee'
-                                  ? parseFloat(record.fields['d'.concat(i2)])
-                                  : 0,
-                              principalamount:
-                                record.fields['transactiontype'] ===
-                                'principalamount'
-                                  ? parseFloat(record.fields['d'.concat(i2)])
-                                  : 0,
-                              interestamount:
-                                record.fields['transactiontype'] ===
-                                'interestamount'
-                                  ? parseFloat(record.fields['d'.concat(i2)])
-                                  : 0,
-                              vat:
-                                record.fields['transactiontype'] === 'vat'
-                                  ? parseFloat(record.fields['d'.concat(i2)])
-                                  : 0,
-                              penaltyamount:
-                                record.fields['transactiontype'] ===
-                                'penaltyamount'
-                                  ? parseFloat(record.fields['d'.concat(i2)])
-                                  : 0,
-                              remarks:
-                                record.fields['transactiontype'] === 'remarks'
-                                  ? record.fields['d'.concat(i2)]
-                                  : ' ',
-                              balancefinal: loanAmount,
-                            },
-                          });
-                        }
-                      }
-                    }
-                  });
-
-                  let result = [];
-                  let exist = false;
-                  let index = 0;
-                  for (let i3 = 0; i3 < lList.length; i3++) {
-                    exist = false;
-                    if (i3 > 0 && result.length >= 0) {
-                      for (let i4 = 0; i4 < result.length; i4++) {
-                        if (
-                          result[i4].fields['transactiondate'] ===
-                          lList[i3].fields['transactiondate']
-                        ) {
-                          exist = true;
-                          index = i4;
-                          break;
-                        }
-                      }
-                    }
-
-                    if (!exist) {
-                      result.push(lList[i3]);
-                    } else {
-                      result[index].fields['disbursementamount'] +=
-                        lList[i3].fields['disbursementamount'];
-                      result[index].fields['processingfee'] +=
-                        lList[i3].fields['processingfee'];
-                      result[index].fields['principalamount'] +=
-                        lList[i3].fields['principalamount'];
-                      result[index].fields['interestamount'] +=
-                        lList[i3].fields['interestamount'];
-                      result[index].fields['vat'] += lList[i3].fields['vat'];
-                      result[index].fields['penaltyamount'] +=
-                        lList[i3].fields['penaltyamount'];
-                      result[index].fields['remarks'] =
-                        lList[i3].fields['remarks'];
-                    }
-                  }
-
-                  let result2 = [];
-                  exist = false;
-                  index = 0;
-                  for (let i3 = 0; i3 < result.length; i3++) {
-                    exist = false;
-                    if (i3 > 0 && result2.length >= 0) {
-                      for (let i4 = 0; i4 < result2.length; i4++) {
-                        if (
-                          result2[i4].fields['month'].concat(
-                            result2[i4].fields['year']
-                          ) ===
-                          result[i3].fields['month'].concat(
-                            result[i3].fields['year']
-                          )
-                        ) {
-                          exist = true;
-                          index = i4;
-                          break;
-                        }
-                      }
-                    }
-                    if (!exist) {
-                      result2.push({
-                        id: result[i3].id,
-                        fields: {
-                          transactiondate: result[i3].fields['transactiondate'],
-                          year: result[i3].fields['year'],
-                          month: result[i3].fields['month'],
-                          disbursementamount:
-                            result[i3].fields['disbursementamount'],
-                          processingfee: result[i3].fields['processingfee'],
-                          vat: result[i3].fields['vat'],
-                          principalamount: result[i3].fields['principalamount'],
-                          interestamount: result[i3].fields['interestamount'],
-                          penaltyamount: result[i3].fields['penaltyamount'],
-                          totalpayable: result[i3].fields['totalpayable'],
-                          balancefinal: result[i3].fields['balancefinal'],
-                        },
-                      });
-                    } else {
-                      result2[index].fields['disbursementamount'] =
-                        result2[index].fields['disbursementamount'] +
-                        result[i3].fields['disbursementamount'];
-                      result2[index].fields['processingfee'] =
-                        result2[index].fields['processingfee'] +
-                        result[i3].fields['processingfee'];
-                      result2[index].fields['vat'] =
-                        result2[index].fields['vat'] + result[i3].fields['vat'];
-
-                      result2[index].fields['principalamount'] =
-                        result2[index].fields['principalamount'] +
-                        result[i3].fields['principalamount'];
-                      result2[index].fields['interestamount'] =
-                        result2[index].fields['interestamount'] +
-                        result[i3].fields['interestamount'];
-                      result2[index].fields['penaltyamount'] =
-                        result2[index].fields['penaltyamount'] +
-                        result[i3].fields['penaltyamount'];
-                      result2[index].fields['totalpayable'] =
-                        result2[index].fields['totalpayable'] +
-                        result[i3].fields['totalpayable'];
-                    }
-                  }
-
-                  let result3 = [];
-                  let prevBal = 0;
-                  for (let i5 = 0; i5 < result2.length; i5++) {
-                    result3.push(result2[i5]);
-
-                    if (i5 > 0) {
-                      prevBal =
-                        prevBal + result3[i5 - 1].fields['totalpayable'];
-                    }
-                    result3[i5].fields['totalpayable'] =
-                      result3[i5].fields['principalamount'] +
-                      result2[i5].fields['interestamount'];
-
-                    result3[i5].fields['balancefinal'] =
-                      result3[i5].fields['balancefinal'] -
-                      prevBal -
-                      result2[i5].fields['totalpayable'];
-                  }
-
-                  let result4 = [];
-                  let result4details = [];
-                  for (let i6 = 0; i6 < result3.length; i6++) {
-                    result4details = [];
-                    for (let i7 = 0; i7 < result.length; i7++) {
-                      if (
-                        result3[i6].fields['month'].concat(
-                          result3[i6].fields['year']
-                        ) ===
-                        result[i7].fields['month'].concat(
-                          result[i7].fields['year']
-                        )
-                      ) {
-                        if (result[i7].fields['totalpayable'] > 0) {
-                          result4details.push({
-                            transactiontype:
-                              result[i7].fields['transactiontype'],
-                            transactiondate:
-                              result[i7].fields['transactiondate'],
-                            principalamount:
-                              result[i7].fields['principalamount'],
-                            interestamount: result[i7].fields['interestamount'],
-                            disbursementamount:
-                              result[i7].fields['disbursementamount'],
-                            processingfee: result[i7].fields['processingfee'],
-                            vat: result[i7].fields['vat'],
-                            penaltyamount: result[i7].fields['penaltyamount'],
-                          });
-                        }
-                      }
-                    }
-
-                    //if (result3[i6].fields['totalpayable'] > 0) {
-                    result4.push({
-                      id: result3[i6].id,
-                      fields: {
-                        transactiondate: result3[i6].fields['transactiondate'],
-                        year: result3[i6].fields['year'],
-                        month: result3[i6].fields['month'],
-                        disbursementamount:
-                          result3[i6].fields['disbursementamount'],
-                        processingfee: result3[i6].fields['processingfee'],
-                        principalamount: result3[i6].fields['principalamount'],
-                        interestamount: result3[i6].fields['interestamount'],
-                        penaltyamount: result3[i6].fields['penaltyamount'],
-                        vat: result3[i6].fields['vat'],
-                        totalpayable: result3[i6].fields['totalpayable'],
-                        balancefinal: result3[i6].fields['balancefinal'],
-                        transactions: result4details,
-                      },
-                    });
-                    //}
-                  }
-
-                  setTransTemp(result4);
-
-                  setLoading(false);
-                  fetchNextPage();
-                });
+    if (loan)
+      {
+        let result = [];
+        let sDate = loan.startdate;
+        let iYear = new Date(sDate).getFullYear();
+        let iMonth = new Date(sDate).getMonth();
+        let dTotal = parseFloat(loan.loanamount)-parseFloat(loan.monthlyprincipalamount);
+        for (let i = 0; i < parseInt(loan.payingperiod); i++) {
+          result.push({
+            id: i,
+            fields: {
+              year: iYear,
+              month: iMonth + 1,
+              principalamount: parseFloat(loan.monthlyprincipalamount).toFixed(2),
+              interestamount: parseFloat(loan.monthlyinterestpayment).toFixed(2),
+              vat: parseFloat(loan.monthlyvatpayment).toFixed(2),
+              totalpayable: parseFloat(loan.monthlyprincipalamount) + parseFloat(loan.monthlyinterestpayment) + parseFloat(loan.monthlyvatpayment),
+              balancefinal: parseFloat(dTotal) <= 0 ? 0 : parseFloat(dTotal)
             }
-          }
-        );
-    }
+          });
+          dTotal = parseFloat(dTotal)-parseFloat(loan.monthlyprincipalamount);
+          sDate = dateAddVal.DateAddVal(
+            '01/01/'.concat(iYear),iMonth + 1,
+            'month'
+          );
+
+          iYear = new Date(sDate).getFullYear();
+          iMonth = new Date(sDate).getMonth();
+        }
+        setTransTemp(result);
+        setLoading(false);
+      }
   };
 
   const GetLoanCollection = async () => {
@@ -464,12 +196,12 @@ export default function ReportAmortization() {
               });
             }
           }
-          console.log(lList[0]);
           setLoan(lList[0]);
           fetchNextPage();
         });
         
       await GetBorrowerCollection();
+
       await GetTransactionCollection();
     }
   };
@@ -849,13 +581,10 @@ export default function ReportAmortization() {
           {transTemp.map((item) => (
             <tr>
               <td width="10%" className="table-tr-box-center">
-                {new Date(item.fields['transactiondate']).getFullYear()}
+                {item.fields['year']}
               </td>
               <td width="10%" className="table-tr-box-center">
-                {dateAddVal
-                  .GetMonthName(new Date(item.fields['transactiondate']))
-                  .substring(0, 3)
-                  .toUpperCase()}
+                {item.fields['month']}
               </td>
               <td width="15%" className="table-tr-box-center">
                 {item.fields['principalamount']

@@ -64,9 +64,13 @@ export default function BorrowerForm(props) {
 
   //Calculate record on change
   const calculate = (fieldValues = values) => {
-    values['borrowerid'] = newRecord
-      ? values['newnumber']
+    console.log(newRecord)
+    values['newnumber'] = newRecord
+      ? values['address'].includes('Puerto Princesa') ? (values['newnumber'].substring(0, 3).concat('M', values['newnumber'].substring(4,  values['newnumber'].length))) : values['newnumber']
       : values['borrowerid'];
+    //values['borrowerid'] = newRecord
+    //  ? values['newnumber']
+    //  : values['borrowerid'];
   };
 
   //Handle submit button
